@@ -1,8 +1,8 @@
-#!/bin/sh -e
 ##
 ## This file is part of the libsigrok project.
 ##
-## Copyright (C) 2010-2012 Bert Vermeulen <bert@biot.com>
+## Copyright (C) 2011 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2012 Alexandru Gagniuc <mr.nuke.me@gmail.com>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -18,7 +18,15 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-test -n "$srcdir" || srcdir=`dirname "$0"`
-test -n "$srcdir" || srcdir=.
+SUBDIRS = \
+	demo
 
-autoreconf --force --install --verbose "$srcdir"
+noinst_LTLIBRARIES = libsigrok4DSLogichardware.la
+
+libsigrok4DSLogichardware_la_SOURCES =
+
+libsigrok4DSLogichardware_la_LIBADD = 
+
+if HW_DEMO
+libsigrok4DSLogichardware_la_LIBADD += demo/libsigrok4DSLogic_hw_demo.la
+endif

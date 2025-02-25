@@ -17,6 +17,20 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 ##
 
+<<<<<<< HEAD:output/text/Makefile.am
+# Local lib, this is NOT meant to be installed!
+noinst_LTLIBRARIES = libsigrok4DSLogicoutputtext.la
+
+libsigrok4DSLogicoutputtext_la_SOURCES = \
+	text.c \
+	text.h \
+	bits.c \
+	hex.c \
+	ascii.c
+
+libsigrok4DSLogicoutputtext_la_CFLAGS = \
+	-I$(top_srcdir)
+=======
 # Grant access permissions to users who are currently logged in locally.
 # This is the default policy for systems using systemd-logind (or a
 # compatible replacement).
@@ -28,5 +42,6 @@
 ACTION!="add|change", GOTO="libsigrok_rules_uaccess_end"
 
 ENV{ID_SIGROK}=="1", TAG+="uaccess"
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1:contrib/61-libsigrok-uaccess.rules
 
 LABEL="libsigrok_rules_uaccess_end"

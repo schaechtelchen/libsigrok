@@ -1,5 +1,5 @@
 ##
-## This file is part of the libsigrok project.
+## This file is part of the libsigrok4DSLogic project.
 ##
 ## Copyright (C) 2010-2012 Bert Vermeulen <bert@biot.com>
 ## Copyright (C) 2012 Alexandru Gagniuc <mr.nuke.me@gmail.com>
@@ -25,6 +25,9 @@ GNUMAKEFLAGS = --no-print-directory
 # distutils/setuptools cause trouble on distcheck. Disable for now.
 DISTCHECK_CONFIGURE_FLAGS = --disable-python
 
+<<<<<<< HEAD
+SUBDIRS = hardware input output tests
+=======
 CLEAN_EXTRA =
 
 FIRMWARE_DIR = $(datadir)/sigrok-firmware
@@ -47,9 +50,38 @@ AM_CPPFLAGS = $(local_includes) $(global_defs)
 SR_MINILZO_CFLAGS = -DMINILZO_HAVE_CONFIG_H
 AM_CFLAGS = $(SR_EXTRA_CFLAGS) $(SR_WFLAGS) $(SR_MINILZO_CFLAGS) $(TESTS_CFLAGS)
 AM_CXXFLAGS = $(SR_WXXFLAGS) $(LIBSIGROKCXX_CFLAGS)
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1
 
-lib_LTLIBRARIES = libsigrok.la
+lib_LTLIBRARIES = libsigrok4DSLogic.la
 
+<<<<<<< HEAD
+libsigrok4DSLogic_la_SOURCES = \
+	backend.c \
+	device.c \
+	session.c \
+	session_file.c \
+	session_driver.c \
+	hwdriver.c \
+	filter.c \
+	strutil.c \
+	log.c \
+        trigger.c \
+	version.c \
+	error.c \
+	std.c
+
+libsigrok4DSLogic_la_LIBADD = \
+	$(LIBOBJS) \
+	hardware/libsigrok4DSLogichardware.la \
+	input/libsigrok4DSLogicinput.la \
+	output/libsigrok4DSLogicoutput.la
+
+libsigrok4DSLogic_la_LDFLAGS = $(SR_LIB_LDFLAGS)
+
+library_includedir = $(includedir)/libsigrok4DSLogic
+library_include_HEADERS = libsigrok.h proto.h version.h
+noinst_HEADERS = libsigrok-internal.h
+=======
 # Backend files
 libsigrok_la_SOURCES = \
 	src/backend.c \
@@ -817,9 +849,10 @@ version-clean:
 	rm -f $(builddir)/include/libsigrok/git-version.h
 
 CLEAN_EXTRA += version-clean
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libsigrok.pc
+pkgconfig_DATA = libsigrok4DSLogic.pc
 
 mimeappdir = $(datadir)/mime/packages
 mimeapp_DATA = contrib/vnd.sigrok.session.xml

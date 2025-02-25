@@ -21,10 +21,23 @@
 # We require at least autoconf 2.63 (AC_INIT format changed there).
 AC_PREREQ([2.63])
 
+<<<<<<< HEAD
+# libsigrok package version number (NOT the same as shared lib version!).
+m4_define([sr_package_version_major], [0])
+m4_define([sr_package_version_minor], [2])
+m4_define([sr_package_version_micro], [0])
+m4_define([sr_package_version], [sr_package_version_major.sr_package_version_minor.sr_package_version_micro])
+
+AC_INIT([libsigrok4DSLogic], [sr_package_version], [support@dreamsourcelab.com],
+	[libsigrok4DSLogic], [http://www.dreamsourcelab.com])
+AC_CONFIG_HEADER([config.h])
+AC_CONFIG_MACRO_DIR([autostuff])
+=======
 AC_INIT([libsigrok], [0.6.0],
 	[sigrok-devel@lists.sourceforge.net],
 	[libsigrok], [http://www.sigrok.org])
 AC_CONFIG_MACRO_DIR([m4])
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1
 AC_CONFIG_AUX_DIR([autostuff])
 AC_CONFIG_HEADERS([config.h include/libsigrok/version.h])
 
@@ -67,6 +80,98 @@ SR_PKG_VERSION_SET([SR_PACKAGE_VERSION], [AC_PACKAGE_VERSION])
 # Carefully read the libtool docs before updating these numbers!
 # The algorithm for determining which number to change (and how) is nontrivial!
 # http://www.gnu.org/software/libtool/manual/libtool.html#Updating-version-info
+<<<<<<< HEAD
+SR_LIB_VERSION_CURRENT=1
+SR_LIB_VERSION_REVISION=2
+SR_LIB_VERSION_AGE=0
+SR_LIB_VERSION="$SR_LIB_VERSION_CURRENT:$SR_LIB_VERSION_REVISION:$SR_LIB_VERSION_AGE"
+SR_LIB_LDFLAGS="-version-info $SR_LIB_VERSION"
+AC_SUBST(SR_LIB_VERSION_CURRENT)
+AC_SUBST(SR_LIB_VERSION_REVISION)
+AC_SUBST(SR_LIB_VERSION_AGE)
+AC_SUBST(SR_LIB_VERSION)
+AC_SUBST(SR_LIB_LDFLAGS)
+
+AC_ARG_ENABLE(all-drivers, AC_HELP_STRING([--enable-all-drivers],
+        [enable all drivers by default [default=yes]]),
+        [HW_ENABLED_DEFAULT="$enableval"],
+        [HW_ENABLED_DEFAULT="yes"])
+
+AC_ARG_ENABLE(demo, AC_HELP_STRING([--enable-demo],
+	[enable demo driver support [default=yes]]),
+	[HW_DEMO="$enableval"],
+	[HW_DEMO=$HW_ENABLED_DEFAULT])
+# Checks for libraries.
+
+case "$host" in
+*mingw*)
+	# We need to link against the Winsock2 library for SCPI over TCP.
+	LIBS="$LIBS -lws2_32";;
+esac
+
+# This variable collects the pkg-config names of all detected libs.
+# It is then used to construct the "Requires.private:" field in the
+# libsigrok4DSLogic.pc file.
+SR_PKGLIBS=""
+
+# libm (the standard math library) is always needed.
+AC_SEARCH_LIBS([pow], [m])
+
+# libglib-2.0 is always needed. Abort if it's not found.
+# Note: glib-2.0 is part of the libsigrok API (hard pkg-config requirement).
+# We require at least 2.32.0 due to e.g. g_variant_new_fixed_array().
+AM_PATH_GLIB_2_0([2.32.0],
+	[CFLAGS="$CFLAGS $GLIB_CFLAGS"; LIBS="$LIBS $GLIB_LIBS"])
+
+# libzip is always needed. Abort if it's not found.
+PKG_CHECK_MODULES([libzip], [libzip >= 0.10],
+	[CFLAGS="$CFLAGS $libzip_CFLAGS"; LIBS="$LIBS $libzip_LIBS";
+	SR_PKGLIBS="$SR_PKGLIBS libzip"])
+
+# libserialport is only needed for some hardware drivers. Disable the
+# respective drivers if it is not found.
+PKG_CHECK_MODULES([libserialport], [libserialport >= 0.1.0],
+	[have_libserialport="yes"; CFLAGS="$CFLAGS $libserialport_CFLAGS";
+	LIBS="$LIBS $libserialport_LIBS";
+	SR_PKGLIBS="$SR_PKGLIBS libserialport"],
+	[have_libserialport="no"])
+
+# Define HAVE_LIBSERIALPORT in config.h if we found libserialport.
+if test "x$have_libserialport" != "xno"; then
+	AC_DEFINE_UNQUOTED(HAVE_LIBSERIALPORT, [1],
+		[Specifies whether we have libserialport.])
+fi
+
+# Serial port helper code is only compiled in if libserialport was found.
+AM_CONDITIONAL(NEED_SERIAL, test "x$have_libserialport" != xno)
+
+# libusb-1.0 is only needed for some hardware drivers. Disable the respective
+# drivers if it is not found.
+case "$host" in
+*freebsd*)
+	# FreeBSD comes with an "integrated" libusb-1.0-style USB API.
+	# This means libusb-1.0 is always available, no need to check for it,
+	# and no need to (potentially) disable any drivers if it's not found.
+	AC_DEFINE_UNQUOTED(HAVE_LIBUSB_1_0, [1],
+		[Specifies whether we have a libusb.h header.])
+	;;
+*)
+	PKG_CHECK_MODULES([libusb], [libusb-1.0 >= 1.0.9],
+		[have_libusb1_0="yes"; CFLAGS="$CFLAGS $libusb_CFLAGS";
+		LIBS="$LIBS $libusb_LIBS";
+		SR_PKGLIBS="$SR_PKGLIBS libusb-1.0"],
+		[have_libusb1_0="no"])
+
+	# Define HAVE_LIBUSB_1_0 in config.h if we found libusb-1.0.
+	if test "x$have_libusb1_0" != "xno"; then
+		AC_DEFINE_UNQUOTED(HAVE_LIBUSB_1_0, [1],
+			[Specifies whether we have a libusb.h header.])
+	fi
+	;;
+esac
+
+
+=======
 # Format: current:revision:age.
 SR_LIB_VERSION_SET([SR_LIB_VERSION], [4:0:0])
 
@@ -172,16 +277,23 @@ AM_CONDITIONAL([NEED_SERIAL], [test "x$sr_have_serial_comm" = xyes])
 ######################
 ##  Feature checks  ##
 ######################
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1
 
 # The Check unit testing framework is optional. Disable if not found.
 SR_PKG_CHECK([check], [SR_PKGLIBS_TESTS], [check >= 0.9.4])
 AM_CONDITIONAL([HAVE_CHECK], [test "x$sr_have_check" = xyes])
 
+<<<<<<< HEAD
+# The OLS driver uses serial port file descriptors directly, and therefore
+# will not currently work on Windows.
+
+=======
 # Enable the C99 standard if possible, and enforce the use
 # of SR_API to explicitly mark all public API functions.
 SR_EXTRA_CFLAGS=
 SR_CHECK_COMPILE_FLAGS([SR_EXTRA_CFLAGS], [C99], [-std=c99 -c99 -AC99 -qlanglvl=extc99])
 SR_CHECK_COMPILE_FLAGS([SR_EXTRA_CFLAGS], [visibility], [-fvisibility=hidden])
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1
 
 SR_ARG_ENABLE_WARNINGS([SR_WFLAGS], [-Wall], [-Wall -Wextra -Wmissing-prototypes])
 
@@ -189,6 +301,32 @@ SR_ARG_ENABLE_WARNINGS([SR_WFLAGS], [-Wall], [-Wall -Wextra -Wmissing-prototypes
 AC_SYS_LARGEFILE
 AC_C_BIGENDIAN
 
+<<<<<<< HEAD
+
+
+AM_CONDITIONAL(HW_DEMO, test x$HW_DEMO = xyes)
+if test "x$HW_DEMO" = "xyes"; then
+	AC_DEFINE(HAVE_LA_DEMO, 1, [Demo driver support])
+fi
+
+
+
+# Checks for header files.
+# These are already checked: inttypes.h stdint.h stdlib.h string.h unistd.h.
+AC_CHECK_HEADERS([fcntl.h sys/time.h termios.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_BIGENDIAN
+AC_C_INLINE
+AC_TYPE_INT8_T
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+=======
 AC_CHECK_HEADERS([sys/mman.h], [SR_APPEND([sr_deps_avail], [sys_mman_h])])
 AC_CHECK_HEADERS([sys/ioctl.h], [SR_APPEND([sr_deps_avail], [sys_ioctl_h])])
 AC_CHECK_HEADERS([sys/timerfd.h], [SR_APPEND([sr_deps_avail], [sys_timerfd_h])])
@@ -246,6 +384,7 @@ AS_IF([test "x$sr_cv_have_select" = xyes],
 # These were taken from the README.LZO file in the miniLZO archive.
 
 AC_CHECK_TYPE(ptrdiff_t,long)
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1
 AC_TYPE_SIZE_T
 AC_CHECK_SIZEOF(short)
 AC_CHECK_SIZEOF(int)
@@ -267,6 +406,16 @@ AC_CHECK_FUNCS(memcmp memcpy memmove memset)
 # Keep track of all drivers so we can list them at the end.
 SR_VAR_SUMMARY([sr_driver_summary])
 
+<<<<<<< HEAD
+AC_CONFIG_FILES([Makefile version.h hardware/Makefile
+		 hardware/demo/Makefile
+		 input/Makefile
+		 output/Makefile
+		 output/text/Makefile
+		 libsigrok4DSLogic.pc
+		 tests/Makefile
+		])
+=======
 # Check whether the sr_deps_avail list contains all of the arguments.
 # Unavailable dependencies are collected in sr_deps_missing.
 sr_check_driver_deps() {
@@ -708,6 +857,7 @@ AC_DEFINE_UNQUOTED([CONF_HOST], ["$host"],
 	[The canonical host libsigrok will run on.])
 
 AC_CONFIG_FILES([Makefile libsigrok.pc bindings/cxx/libsigrokcxx.pc])
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1
 
 AC_OUTPUT
 
@@ -719,6 +869,22 @@ m4_define([SR_PREPARE_BINDING_REPORT], [
 ])
 m4_map_args([SR_PREPARE_BINDING_REPORT], [cxx], [python], [ruby], [java])
 
+<<<<<<< HEAD
+# Note: This only works for libs with pkg-config integration.
+for lib in "glib-2.0 >= 2.32.0" "libzip >= 0.10" "libserialport >= 0.1.0" "libusb-1.0 >= 1.0.9" "libftdi >= 0.16" "libudev >= 151" "alsa >= 1.0" "check >= 0.9.4"; do
+	if `$PKG_CONFIG --exists $lib`; then
+		ver=`$PKG_CONFIG --modversion $lib`
+		answer="yes ($ver)"
+	else
+		answer="no"
+	fi
+	echo "  - $lib: $answer"
+done
+
+echo -e "\nEnabled hardware drivers:\n"
+echo "  - demo............................ $HW_DEMO"
+echo
+=======
 cat >&AS_MESSAGE_FD <<_EOF
 
 libsigrok configuration summary:
@@ -729,6 +895,7 @@ libsigrok configuration summary:
  - Building on..................... $build
  - Building for.................... $host
  - Building shared / static........ $enable_shared / $enable_static
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1
 
 Compile configuration:
  - C compiler...................... $CC

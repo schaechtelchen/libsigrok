@@ -28,4 +28,21 @@ ACTION!="add|change", GOTO="libsigrok_rules_plugdev_end"
 
 ENV{ID_SIGROK}=="1", MODE="660", GROUP="plugdev"
 
+<<<<<<< HEAD:tests/Makefile.am
+check_main_SOURCES = \
+	$(top_builddir)/libsigrok.h \
+	lib.c \
+	lib.h \
+	check_main.c \
+	check_core.c \
+	check_strutil.c \
+	check_driver_all.c
+
+check_main_CFLAGS = @check_CFLAGS@
+
+check_main_LDADD = $(top_builddir)/libsigrok4DSLogic.la @check_LIBS@
+
+endif
+=======
 LABEL="libsigrok_rules_plugdev_end"
+>>>>>>> f06f788118191d19fdbbb37046d3bd5cec91adb1:contrib/61-libsigrok-plugdev.rules
